@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- The package page and every documentation link name the new location under `https://anilcancakir.com/magic/encryption` (the pub.dev page carries it from the next release).
+
 ### Fixed
 
 - Two device-key calls that start together on a first launch now share one generated key, so neither payload is lost after a restart.

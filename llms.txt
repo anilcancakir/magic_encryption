@@ -55,12 +55,12 @@ void main() {
 
 ## Docs
 
-- [Installation](https://anilcancakir.com/magic_encryption/docs/getting-started/installation.md): install, the key, requirements, a short check.
-- [Crypt](https://anilcancakir.com/magic_encryption/docs/basics/crypt.md): encrypt, decrypt, failure modes, gotchas.
-- [Device key](https://anilcancakir.com/magic_encryption/docs/basics/device-key.md): the Vault-backed key, lifecycle, gotchas.
-- [App key](https://anilcancakir.com/magic_encryption/docs/basics/app-key.md): key formats, `key:generate`, rotation.
-- [Wire format](https://anilcancakir.com/magic_encryption/docs/guides/wire-format.md): the exact payload, what it does not guarantee, Laravel.
-- [Testing](https://anilcancakir.com/magic_encryption/docs/guides/testing.md): a booted app, a fake vault, pinned IVs.
+- [Installation](https://anilcancakir.com/magic/docs/encryption/getting-started/installation.md): install, the key, requirements, a short check.
+- [Crypt](https://anilcancakir.com/magic/docs/encryption/basics/crypt.md): encrypt, decrypt, failure modes, gotchas.
+- [Device key](https://anilcancakir.com/magic/docs/encryption/basics/device-key.md): the Vault-backed key, lifecycle, gotchas.
+- [App key](https://anilcancakir.com/magic/docs/encryption/basics/app-key.md): key formats, `key:generate`, rotation.
+- [Wire format](https://anilcancakir.com/magic/docs/encryption/guides/wire-format.md): the exact payload, what it does not guarantee, Laravel.
+- [Testing](https://anilcancakir.com/magic/docs/encryption/guides/testing.md): a booted app, a fake vault, pinned IVs.
 
 ## Links
 
