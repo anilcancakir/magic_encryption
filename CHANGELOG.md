@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-15
+
 ### Fixed
 
 - Two device-key calls that start together on a first launch now share one generated key, so neither payload is lost after a restart.
