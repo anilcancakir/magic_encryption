@@ -32,7 +32,7 @@
 | Import | `package:magic_encryption/magic_encryption.dart` |
 | Entry points | `Crypt` (facade), `EncryptionServiceProvider` (wiring), `MagicEncrypter` (the cipher), `MagicDecryptException`; `key:generate` (CLI) |
 | Platforms | Config-key mode is pure Dart and runs wherever Flutter does. Device-key mode is as strong as `Vault`'s store on that platform (Keychain, Keystore; a weaker store on web). |
-| Requires | Dart >=3.13, Flutter >=3.47, `magic` ^0.1.0 |
+| Requires | Dart >=3.13, Flutter >=3.47, `magic` ^1.0.0 |
 | Dependencies | `magic`, `pointycastle`; dowel runs `key:generate` |
 | License | MIT |
 

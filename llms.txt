@@ -2,7 +2,7 @@
 
 > AES-256-CBC encryption for Magic apps: the `Crypt` facade encrypts with `APP_KEY` (`encrypt`, `decrypt`) or with a per-device key kept in `Vault` (`encryptWithDeviceKey`, `decryptWithDeviceKey`), and `key:generate` writes the key. Payloads are `base64(iv):base64(ciphertext)`, not authenticated and not Laravel-compatible.
 
-**Stack**: Flutter >=3.47.0 · Dart >=3.13.0 · Requires `magic` ^0.1.0 · Runtime deps: `magic`, `pointycastle`; dowel runs `key:generate`. No mocking library.
+**Stack**: Flutter >=3.47.0 · Dart >=3.13.0 · Requires `magic` ^1.0.0 · Runtime deps: `magic`, `pointycastle`; dowel runs `key:generate`. No mocking library.
 
 **Setup**:
 

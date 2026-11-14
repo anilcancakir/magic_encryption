@@ -1,7 +1,7 @@
 ---
 name: magic-encryption
 description: "Encrypt and decrypt strings in a Magic app with the Crypt facade, an APP_KEY or a Vault-backed device key, and magic_encryption's key:generate."
-version: 0.0.1
+version: 1.0.0
 when_to_use: "Use when code imports package:magic_encryption or touches Crypt, EncryptionServiceProvider, MagicEncrypter, MagicDecryptException, APP_KEY or key:generate in a Magic app."
 ---
 
@@ -19,7 +19,7 @@ dart run magic:dowel plugin:install magic_encryption
 dart run magic:dowel key:generate
 ```
 
-Requires Dart >=3.13, Flutter >=3.47 and `magic` ^0.1.0. The installer registers `EncryptionServiceProvider` in `lib/config/app.dart` and publishes no config, because `magic:install` already wires `'key': env('APP_KEY')`. It never runs `key:generate`. Import only the barrel: `package:magic_encryption/magic_encryption.dart`.
+Requires Dart >=3.13, Flutter >=3.47 and `magic` ^1.0.0. The installer registers `EncryptionServiceProvider` in `lib/config/app.dart` and publishes no config, because `magic:install` already wires `'key': env('APP_KEY')`. It never runs `key:generate`. Import only the barrel: `package:magic_encryption/magic_encryption.dart`.
 
 ## Crypt rules
 
