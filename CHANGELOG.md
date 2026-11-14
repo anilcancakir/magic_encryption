@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - The package page is `https://anilcancakir.com/magic/encryption` and the documentation links sit under `https://anilcancakir.com/magic/docs/encryption` (the pub.dev page carries it from the next release).
 
+### Fixed
+
+- The device-key page and the skill no longer say that uninstalling the app always removes the key: on Android it does, while on iOS the Keychain item can survive a reinstall.
+
 ## [1.0.1] - 2026-11-15
 
 ### Fixed

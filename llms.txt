@@ -47,7 +47,7 @@ void main() {
 
 - Import only `package:magic_encryption/magic_encryption.dart`; everything under `src/` is private.
 - Register `EncryptionServiceProvider` in the `providers` list; it is not auto-registered.
-- The wire format is `base64(iv):base64(ciphertext)`: AES-256-CBC, PKCS7, a random 16-byte IV per call, UTF-8 plaintext. It is NOT Laravel's `Crypt` format and cannot read or write it.
+- The wire format is `base64(iv):base64(ciphertext)`: AES-256-CBC, PKCS7, a random 16-byte IV per call, UTF-8 plaintext. It is not Laravel's `Crypt` format and cannot read or write it.
 - There is no MAC. A payload that decrypts is not proven untampered, and a decryption failure reported to the sender is a padding oracle. Use `Crypt` for confidentiality at rest; verify integrity on the server.
 - `Crypt.encrypt('')` throws `RangeError`; a wrong-key payload throws `MagicDecryptException`, except for about one in 256 that decrypts to garbage.
 - Never run `key:generate` on an app that holds stored ciphertext: it replaces `APP_KEY`. `generateDeviceKey()` and `clearDeviceKey()` lose device-key ciphertext the same way.
