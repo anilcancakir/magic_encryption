@@ -58,6 +58,33 @@ void main() {
       expect(() => Crypt.encrypt('foo'), throwsException);
     });
 
+    test('the missing key error names the real command', () async {
+      await Magic.init(
+        configs: [
+          {
+            'app': {
+              'key': null,
+              'providers': [(app) => EncryptionServiceProvider(app)],
+            },
+          },
+        ],
+      );
+
+      expect(
+        () => Crypt.encrypt('foo'),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            allOf(
+              contains('dart run magic:dowel key:generate'),
+              isNot(contains('"magic key:generate"')),
+            ),
+          ),
+        ),
+      );
+    });
+
     test('throws if key is invalid length', () async {
       await Magic.init(
         configs: [

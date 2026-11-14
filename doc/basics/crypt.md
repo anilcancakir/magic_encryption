@@ -47,7 +47,7 @@ The key is `app.key`, normally `APP_KEY` from `.env`. To encrypt with a key that
 |:----------|:-------------|
 | `Crypt.encrypt('')` | Throws `RangeError`: there is no block to pad. Guard against the empty string. |
 | `app.key` missing or empty | `boot()` succeeds. The first `Crypt` call throws an `Exception` saying the app key is missing. |
-| `app.key` of the wrong size | Throws an `Exception` on the first `Crypt` call, not at boot. A raw key must be 32 characters; a `base64:` key must decode to 32 bytes. |
+| `app.key` of the wrong size | Throws an `Exception` on the first `Crypt` call, not at boot. A raw key must be 32 bytes of UTF-8 (32 characters for ASCII); a `base64:` key must decode to 32 bytes. |
 | A `base64:` key that is not valid base64 | Throws an `Exception` on the first `Crypt` call. |
 | A payload without exactly one `:` | `decrypt` throws `MagicDecryptException` (`Invalid payload format`). |
 | A payload with a bad IV, partial block or broken padding | `decrypt` throws `MagicDecryptException` (`Decryption failed: ...`). |

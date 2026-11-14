@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:magic/magic.dart';
@@ -33,8 +34,14 @@ class Crypt {
   /// The Vault key for storing the device encryption key.
   static const String _deviceKeyName = 'magic:device_encryption_key';
 
-  /// Cached device encrypter instance.
-  static MagicEncrypter? _deviceEncrypter;
+  /// The device encrypter, shared as one in-flight [Future].
+  ///
+  /// Concurrent first calls await the same creation, so Vault ends up holding
+  /// the one key every caller encrypted under. [generateDeviceKey] and
+  /// [clearDeviceKey] queue behind it, so the last Vault write is also the
+  /// last cache write. A failed step is dropped so the next call retries, and
+  /// a cleared key resolves to `null`.
+  static Future<MagicEncrypter?>? _deviceEncrypter;
 
   /// The singleton accessor for the config-based encrypter.
   static MagicEncrypter get _service => Magic.make<MagicEncrypter>('encrypter');
@@ -115,29 +122,96 @@ class Crypt {
   ///
   /// > **Warning**
   /// > Calling this will invalidate all previously encrypted device data.
-  static Future<void> generateDeviceKey() async {
+  static Future<void> generateDeviceKey() {
     final newKey = _generateRandomKey();
-    await Vault.put(_deviceKeyName, newKey);
-    _deviceEncrypter = MagicEncrypter(newKey);
+
+    return _changeDeviceKey(() async {
+      await Vault.put(_deviceKeyName, newKey);
+      return MagicEncrypter(newKey);
+    });
   }
 
   /// Clear the device key.
   ///
   /// Removes the device encryption key from Vault. Data encrypted with
   /// this key will no longer be recoverable.
-  static Future<void> clearDeviceKey() async {
-    await Vault.delete(_deviceKeyName);
-    _deviceEncrypter = null;
+  static Future<void> clearDeviceKey() {
+    return _changeDeviceKey(() async {
+      await Vault.delete(_deviceKeyName);
+      return null;
+    });
   }
 
   // ---------------------------------------------------------------------------
   // Private Helpers
   // ---------------------------------------------------------------------------
 
+  /// Run a Vault write behind whatever device-key work is already in flight.
+  ///
+  /// The cache is assigned synchronously, so a later call queues behind this
+  /// change instead of racing it. The previous work's outcome is ignored here:
+  /// its own callers already see its error. A [change] that returns `null`
+  /// leaves no encrypter cached.
+  static Future<void> _changeDeviceKey(
+    Future<MagicEncrypter?> Function() change,
+  ) {
+    final previous = _deviceEncrypter;
+    final next = _afterPrevious(previous, change);
+    _deviceEncrypter = next;
+
+    return next.then<void>(
+      (encrypter) {
+        if (encrypter == null && identical(_deviceEncrypter, next)) {
+          _deviceEncrypter = null;
+        }
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        if (identical(_deviceEncrypter, next)) _deviceEncrypter = null;
+        Error.throwWithStackTrace(error, stackTrace);
+      },
+    );
+  }
+
+  /// Wait for [previous] to settle, then run [change].
+  static Future<MagicEncrypter?> _afterPrevious(
+    Future<MagicEncrypter?>? previous,
+    Future<MagicEncrypter?> Function() change,
+  ) async {
+    await previous?.then<void>((_) {}, onError: (Object _) {});
+
+    return change();
+  }
+
   /// Get or create the device encrypter.
   static Future<MagicEncrypter> _getDeviceEncrypter() async {
-    if (_deviceEncrypter != null) return _deviceEncrypter!;
+    final cached = _deviceEncrypter;
+    if (cached == null) return _createDeviceEncrypter();
 
+    // A cleared key resolves to null: start over against the empty Vault.
+    return await cached ?? _getDeviceEncrypter();
+  }
+
+  /// Start the one shared creation and cache it until it settles.
+  static Future<MagicEncrypter> _createDeviceEncrypter() {
+    final pending = _loadDeviceEncrypter();
+    _deviceEncrypter = pending;
+
+    // A failure is not cached. The identity check leaves an encrypter that
+    // generateDeviceKey() installed in the meantime alone.
+    unawaited(
+      pending.then<void>(
+        (_) {},
+        onError: (Object _) {
+          if (identical(_deviceEncrypter, pending)) _deviceEncrypter = null;
+        },
+      ),
+    );
+
+    return pending;
+  }
+
+  /// Read the device key from Vault, generating and storing it on first use.
+  static Future<MagicEncrypter> _loadDeviceEncrypter() async {
     var key = await Vault.get(_deviceKeyName);
 
     // Generate key on first use
@@ -146,8 +220,7 @@ class Crypt {
       await Vault.put(_deviceKeyName, key);
     }
 
-    _deviceEncrypter = MagicEncrypter(key);
-    return _deviceEncrypter!;
+    return MagicEncrypter(key);
   }
 
   /// Generate a cryptographically secure 32-character random key.

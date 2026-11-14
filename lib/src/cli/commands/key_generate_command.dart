@@ -43,38 +43,44 @@ class KeyGenerateCommand extends DowelCommand {
     // 4. Update or create .env file with the new key.
     _writeToEnv(envFile, keyWithPrefix);
 
-    // 5. Output success message.
-    ctx.output.success('Application key set successfully.');
-    ctx.output.writeln('APP_KEY               $keyWithPrefix');
+    // 5. Output a success message; the key stays out of stdout and CI logs.
+    ctx.output.success('Application key set successfully in .env.');
     return 0;
   }
 
+  /// A `.env` line that sets `APP_KEY`: group 1 is the leading whitespace and
+  /// optional `export`, and the match runs up to the end of the value, so a
+  /// trailing carriage return is not part of it.
+  static final RegExp _appKeyLine = RegExp(r'^(\s*(?:export\s+)?)APP_KEY=.*');
+
   /// Write the key to the environment file.
+  ///
+  /// The file is written in place, so its permissions and a symlink at its
+  /// path survive. A crash mid-write can leave it truncated.
   void _writeToEnv(File envFile, String key) {
-    if (envFile.existsSync()) {
-      final content = envFile.readAsStringSync();
-      final lines = content.split('\n');
-      bool keyExists = false;
+    final content = envFile.existsSync() ? envFile.readAsStringSync() : '';
+    final lines = content.split('\n');
+    final index = lines.indexWhere(_appKeyLine.hasMatch);
 
-      for (int i = 0; i < lines.length; i++) {
-        if (lines[i].trim().startsWith('APP_KEY=')) {
-          lines[i] = 'APP_KEY=$key';
-          keyExists = true;
-          break;
-        }
-      }
-
-      if (!keyExists) {
-        if (lines.isNotEmpty && lines.last.isNotEmpty) {
-          lines.add('');
-        }
-        lines.add('APP_KEY=$key');
-      }
-
-      envFile.writeAsStringSync(lines.join('\n'));
+    // 1. Replace the value on the existing line (keeping any `export`), or
+    //    append after exactly one newline.
+    final String updated;
+    if (index >= 0) {
+      lines[index] = lines[index].replaceFirstMapped(
+        _appKeyLine,
+        (match) => '${match[1]}APP_KEY=$key',
+      );
+      updated = lines.join('\n');
     } else {
-      envFile.writeAsStringSync('APP_KEY=$key\n');
+      final separator = content.isEmpty || content.endsWith('\n') ? '' : '\n';
+      updated = '$content${separator}APP_KEY=$key';
     }
+
+    // 2. Keep the file well-formed: one trailing newline.
+    final body = updated.endsWith('\n') ? updated : '$updated\n';
+
+    // 3. Write in place and flush, so the mode and any symlink are kept.
+    envFile.writeAsStringSync(body, flush: true);
   }
 
   /// Generate a secure random 32-byte key base64 encoded.
