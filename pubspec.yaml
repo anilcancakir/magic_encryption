@@ -1,6 +1,6 @@
 name: magic_encryption
 description: "AES-256-CBC encryption for Magic apps: the Crypt facade, encrypter and key:generate."
-version: 1.0.0
+version: 1.0.1
 homepage: https://anilcancakir.com/magic/encryption
 repository: https://github.com/anilcancakir/magic_encryption
 issue_tracker: https://github.com/anilcancakir/magic_encryption/issues
