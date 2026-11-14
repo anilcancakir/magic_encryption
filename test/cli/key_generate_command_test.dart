@@ -104,15 +104,87 @@ void main() {
       expect(content, isNot(contains('old')));
     });
 
-    test('replaces an exported APP_KEY instead of adding a second', () async {
+    test('replaces an exported APP_KEY and keeps the export prefix', () async {
       envFile.writeAsStringSync('FOO=1\nexport APP_KEY=old\n');
 
       await run();
 
       final content = envFile.readAsStringSync();
-      expect(content, matches(RegExp('^FOO=1\n${keyLine.pattern}\n\$')));
+      expect(content, matches(RegExp('^FOO=1\nexport ${keyLine.pattern}\n\$')));
       expect('APP_KEY'.allMatches(content), hasLength(1));
     });
+
+    test('leaves a commented APP_KEY alone and appends a real one', () async {
+      envFile.writeAsStringSync('# APP_KEY=old\n');
+
+      await run();
+
+      expect(
+        envFile.readAsStringSync(),
+        matches(RegExp('^# APP_KEY=old\n${keyLine.pattern}\n\$')),
+      );
+    });
+
+    test('leaves a longer name ending in APP_KEY alone', () async {
+      envFile.writeAsStringSync('MY_APP_KEY=old\n');
+
+      await run();
+
+      expect(
+        envFile.readAsStringSync(),
+        matches(RegExp('^MY_APP_KEY=old\n${keyLine.pattern}\n\$')),
+      );
+    });
+
+    test('replaces only the first of two APP_KEY lines', () async {
+      envFile.writeAsStringSync('APP_KEY=first\nFOO=1\nAPP_KEY=second\n');
+
+      await run();
+
+      expect(
+        envFile.readAsStringSync(),
+        matches(RegExp('^${keyLine.pattern}\nFOO=1\nAPP_KEY=second\n\$')),
+      );
+    });
+
+    test(
+      'replaces APP_KEY in a CRLF .env and keeps its line endings',
+      () async {
+        envFile.writeAsStringSync('FOO=1\r\nAPP_KEY=old\r\nBAR=2\r\n');
+
+        await run();
+
+        // Only the APP_KEY value changes: the replaced line keeps its CR and
+        // every other line is untouched.
+        expect(
+          envFile.readAsStringSync(),
+          matches(RegExp('^FOO=1\r\n${keyLine.pattern}\r\nBAR=2\r\n\$')),
+        );
+      },
+    );
+
+    test('keeps the 0600 mode of an existing .env', () async {
+      envFile.writeAsStringSync('FOO=1\n');
+      Process.runSync('chmod', ['600', envFile.path]);
+
+      await run();
+
+      expect(envFile.statSync().mode & 0x1FF, 384);
+    }, skip: Platform.isWindows ? 'POSIX file modes only' : false);
+
+    test('writes through a symlinked .env and keeps the symlink', () async {
+      final target = File('${project.path}/shared.env')
+        ..writeAsStringSync('FOO=1\nAPP_KEY=old\n');
+      Link(envFile.path).createSync(target.path);
+
+      await run();
+
+      expect(FileSystemEntity.isLinkSync(envFile.path), isTrue);
+      expect(
+        target.readAsStringSync(),
+        matches(RegExp('^FOO=1\n${keyLine.pattern}\n\$')),
+      );
+    }, skip: Platform.isWindows ? 'symlinks need elevated rights' : false);
 
     test('leaves no temporary file behind', () async {
       envFile.writeAsStringSync('FOO=1\n');

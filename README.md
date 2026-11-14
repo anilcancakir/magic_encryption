@@ -81,7 +81,7 @@ Failure modes:
 |-----------|--------------|
 | `Crypt.encrypt('')` | Throws `RangeError`: there is no block to pad. |
 | `app.key` missing or empty | The first `Crypt` call throws an `Exception` that says the key is missing. Boot does not fail. |
-| `app.key` the wrong size | The first `Crypt` call throws an `Exception`: a raw key must be 32 characters, a `base64:` key must decode to 32 bytes. |
+| `app.key` the wrong size | The first `Crypt` call throws an `Exception`: a raw key must be 32 bytes of UTF-8 (32 characters for ASCII), a `base64:` key must decode to 32 bytes. |
 | A payload of the wrong shape | `decrypt` throws `MagicDecryptException`. |
 | A payload from another key | Almost always `MagicDecryptException`; about one in 256 passes unpadding by chance and returns garbage text. |
 
@@ -122,7 +122,7 @@ Rules for an agent writing code against this package. Each one is a mistake that
 |----|---------|
 | Import only `package:magic_encryption/magic_encryption.dart` | Everything under `src/` is private. |
 | Register `EncryptionServiceProvider` in `lib/config/app.dart` for `Crypt.encrypt` and `Crypt.decrypt` | It is not auto-registered, and without it the encrypter is never bound. |
-| Set `APP_KEY` with `dart run magic:dowel key:generate` and never commit it | A raw 32-character key or a `base64:` key of 32 bytes is accepted; anything else fails on first use. |
+| Set `APP_KEY` with `dart run magic:dowel key:generate` and never commit it | A raw key of 32 bytes of UTF-8 (32 characters for ASCII) or a `base64:` key of 32 bytes is accepted; anything else fails on first use. |
 | Never run `key:generate` on an app with stored ciphertext | It replaces `APP_KEY`, and every `Crypt` value written under the old key becomes unreadable. |
 | Treat `Crypt` as confidentiality only | There is no MAC. Verify integrity server-side. |
 | Catch `MagicDecryptException` and do not echo it to the party that sent the payload | Distinguishable failures are what a padding oracle needs. |

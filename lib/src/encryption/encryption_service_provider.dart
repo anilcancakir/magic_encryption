@@ -21,9 +21,9 @@ class EncryptionServiceProvider extends ServiceProvider {
   ///
   /// Otherwise it binds a lazy [MagicEncrypter] built via
   /// [MagicEncrypter.fromAppKey], which accepts both a `base64:`-prefixed key
-  /// (as produced by `dart run magic:dowel key:generate`) and a raw 32-byte
-  /// key, and
-  /// throws a clear error on access if the resolved key is not 32 bytes.
+  /// (as produced by `dart run magic:dowel key:generate`) and a raw key of 32
+  /// UTF-8 bytes (32 characters for ASCII). It throws a clear error on access
+  /// if the resolved key is not 32 bytes.
   @override
   Future<void> boot() async {
     final key = Config.get<String>('app.key');
@@ -41,7 +41,7 @@ class EncryptionServiceProvider extends ServiceProvider {
     }
 
     // Lazy: an invalid key surfaces a clear error when Crypt is first used,
-    // not during boot. fromAppKey handles both base64: and raw 32-char keys.
+    // not during boot. fromAppKey handles both base64: and raw 32-byte keys.
     app.singleton('encrypter', () => MagicEncrypter.fromAppKey(key));
   }
 }

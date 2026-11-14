@@ -15,7 +15,7 @@ The exact bytes `Crypt` and `MagicEncrypter` write, what they do not guarantee a
 | Part | Value |
 |:-----|:------|
 | Cipher | AES-256 in CBC mode with PKCS7 padding |
-| Key | 32 bytes: the UTF-8 bytes of a 32-character string, or the decoded bytes of a `base64:` key |
+| Key | 32 bytes: the UTF-8 bytes of a raw string (32 characters for ASCII), or the decoded bytes of a `base64:` key |
 | IV | 16 random bytes per call from a secure random source |
 | Plaintext | The string, UTF-8 encoded |
 | Payload | `base64(iv):base64(ciphertext)`, standard base64 with padding, one colon |
@@ -41,7 +41,7 @@ void main() {
 }
 ```
 
-`MagicEncrypter(String key)` throws an `Exception` unless the key is 32 characters. `MagicEncrypter.fromAppKey(String)` also accepts a `base64:` key and throws unless it decodes to 32 bytes. `decrypt` splits on `:`, base64-decodes both halves, decrypts and decodes UTF-8 with malformed bytes replaced by U+FFFD.
+`MagicEncrypter(String key)` throws an `Exception` unless the key is 32 bytes of UTF-8 (32 characters for ASCII). `MagicEncrypter.fromAppKey(String)` also accepts a `base64:` key and throws unless it decodes to 32 bytes. `decrypt` splits on `:`, base64-decodes both halves, decrypts and decodes UTF-8 with malformed bytes replaced by U+FFFD.
 
 <a name="not-authenticated"></a>
 ## Not Authenticated
@@ -66,7 +66,7 @@ Laravel's `Crypt` writes base64 of a JSON object holding the IV, the value and a
 | Passing a `Crypt` payload to Laravel's decrypter | It will not parse; the formats differ. |
 | Relying on a failed decrypt to catch tampering | Most tampering still decrypts. Verify integrity on the server. |
 | Pinning the IV in production | `MagicEncrypter.encrypt` has an `iv:` parameter for tests only; a reused IV leaks equality of plaintext prefixes. |
-| Building a `MagicEncrypter` from a key that is not 32 characters | It throws; use `MagicEncrypter.fromAppKey` for a `base64:` key. |
+| Building a `MagicEncrypter` from a key that is not 32 bytes of UTF-8 (32 characters for ASCII) | It throws; use `MagicEncrypter.fromAppKey` for a `base64:` key. |
 
 <a name="related-documentation"></a>
 ## Related Documentation

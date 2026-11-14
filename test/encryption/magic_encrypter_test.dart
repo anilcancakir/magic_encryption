@@ -68,16 +68,13 @@ void main() {
         expect(encrypter.decrypt(cipher), 'hello');
       });
 
-      test(
-        'accepts a base64: key (magic key:generate format) and round-trips',
-        () {
-          // key:generate writes `base64:<base64 of 32 random bytes>`.
-          final appKey = 'base64:${base64.encode(validKey.codeUnits)}';
-          final encrypter = MagicEncrypter.fromAppKey(appKey);
-          final cipher = encrypter.encrypt('hello');
-          expect(encrypter.decrypt(cipher), 'hello');
-        },
-      );
+      test('accepts a base64: key (key:generate format) and round-trips', () {
+        // key:generate writes `base64:<base64 of 32 random bytes>`.
+        final appKey = 'base64:${base64.encode(validKey.codeUnits)}';
+        final encrypter = MagicEncrypter.fromAppKey(appKey);
+        final cipher = encrypter.encrypt('hello');
+        expect(encrypter.decrypt(cipher), 'hello');
+      });
 
       test('throws when a base64: key does not decode to 32 bytes', () {
         final shortKey = 'base64:${base64.encode(<int>[1, 2, 3])}';

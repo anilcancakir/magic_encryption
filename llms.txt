@@ -34,7 +34,7 @@ void main() {
 
 - `Crypt` (facade): `encrypt(String)` and `decrypt(String)` use the `app.key` config; `encryptWithDeviceKey`, `decryptWithDeviceKey` (async) use a key generated on first use and kept in `Vault`; `hasDeviceKey()`, `generateDeviceKey()` (replaces the key), `clearDeviceKey()`.
 - `EncryptionServiceProvider`: binds the lazy `encrypter` singleton in `boot()`. Not auto-registered. A missing or empty `app.key` binds a thrower, and a wrong-size key throws on first `Crypt` use, not at boot.
-- `MagicEncrypter(String key)`: the cipher, the key being 32 characters whose UTF-8 bytes are the AES key. `MagicEncrypter.fromAppKey(String)` also accepts `base64:` plus 32 bytes. `encrypt(String)` and `decrypt(String)`.
+- `MagicEncrypter(String key)`: the cipher, the key being 32 bytes of UTF-8 (32 characters for ASCII), which are the AES key. `MagicEncrypter.fromAppKey(String)` also accepts `base64:` plus 32 bytes. `encrypt(String)` and `decrypt(String)`.
 - `MagicDecryptException`: thrown by `decrypt` for a malformed payload or a failed decryption.
 - `key:generate` (dowel command, `package:magic_encryption/cli.dart`): writes `APP_KEY=base64:<32 random bytes>` to `.env`; `--show` prints it instead.
 

@@ -27,7 +27,7 @@ Requires Dart >=3.13, Flutter >=3.47 and `magic` ^1.0.0. The installer registers
 2. Never call `Crypt.encrypt('')`. An empty string throws `RangeError`, because there is no block to pad. Guard the call.
 3. `Crypt` takes and returns a `String`. Encode a `Map` or `List` with `jsonEncode` before and `jsonDecode` after.
 4. Catch `MagicDecryptException` from `decrypt` and answer the party that sent the payload with one generic error. Different failures shown to a sender are what a padding oracle is built from.
-5. A missing or wrong-size `app.key` does not fail boot. The first `Crypt` call throws an `Exception`. A raw key is 32 characters; a `base64:` key decodes to 32 bytes.
+5. A missing or wrong-size `app.key` does not fail boot. The first `Crypt` call throws an `Exception`. A raw key is 32 bytes of UTF-8 (32 characters for ASCII); a `base64:` key decodes to 32 bytes.
 6. Treat `Crypt` as confidentiality at rest and nothing more. There is no MAC, so a payload that decrypts is not proven untampered, and CBC is malleable. Verify a token, an amount or an identity on the server that issued it.
 7. A payload from the wrong key almost always throws `MagicDecryptException`, but about one in 256 unpads cleanly and returns garbage text. Do not use a decrypt that did not throw as a key check.
 
@@ -41,7 +41,7 @@ Requires Dart >=3.13, Flutter >=3.47 and `magic` ^1.0.0. The installer registers
 
 ## Wire format
 
-AES-256 in CBC mode, PKCS7 padding, key bytes either the UTF-8 bytes of a 32-character string or the 32 decoded bytes of a `base64:` key, a random 16-byte IV per call, UTF-8 plaintext, payload `base64(iv):base64(ciphertext)`. It is the format Magic 0.0.41 and earlier wrote, so it never changes. It is not Laravel's JSON-with-HMAC payload: neither side reads the other's. `MagicEncrypter.encrypt` has an `iv:` parameter for tests only.
+AES-256 in CBC mode, PKCS7 padding, key bytes either the UTF-8 bytes of a raw string (32 bytes, 32 characters for ASCII) or the 32 decoded bytes of a `base64:` key, a random 16-byte IV per call, UTF-8 plaintext, payload `base64(iv):base64(ciphertext)`. It is the format Magic 0.0.41 and earlier wrote, so it never changes. It is not Laravel's JSON-with-HMAC payload: neither side reads the other's. `MagicEncrypter.encrypt` has an `iv:` parameter for tests only.
 
 ## Recipes
 

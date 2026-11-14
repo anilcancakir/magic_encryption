@@ -64,8 +64,8 @@ class MagicEncrypter {
   ///
   /// Accepts either a `base64:`-prefixed key (as produced by
   /// `dart run magic:dowel key:generate`, which base64-encodes 32 random
-  /// bytes) or a raw string of 32 UTF-8 bytes. Throws when the resolved key is not 32 bytes, so the
-  /// generator output and the encrypter stay compatible.
+  /// bytes) or a raw string of 32 UTF-8 bytes. Throws when the resolved key is
+  /// not 32 bytes, so the generator output and the encrypter stay compatible.
   factory MagicEncrypter.fromAppKey(String appKey) {
     if (appKey.startsWith('base64:')) {
       final Uint8List bytes;
