@@ -1,0 +1,70 @@
+# magic_encryption
+
+> AES-256-CBC encryption for Magic apps: the `Crypt` facade encrypts with `APP_KEY` (`encrypt`, `decrypt`) or with a per-device key kept in `Vault` (`encryptWithDeviceKey`, `decryptWithDeviceKey`), and `key:generate` writes the key. Payloads are `base64(iv):base64(ciphertext)`, not authenticated and not Laravel-compatible.
+
+**Stack**: Flutter >=3.47.0 · Dart >=3.13.0 · Requires `magic` ^0.1.0 · Runtime deps: `magic`, `pointycastle`; dowel runs `key:generate`. No mocking library.
+
+**Setup**:
+
+```bash
+flutter pub add magic_encryption
+dart run magic:dowel plugin:install magic_encryption
+dart run magic:dowel key:generate
+```
+
+```dart
+import 'package:magic_encryption/magic_encryption.dart';
+
+void main() {
+  // EncryptionServiceProvider is registered in lib/config/app.dart by plugin:install.
+  final String secret = Crypt.encrypt('my-secret-value');
+
+  try {
+    final String value = Crypt.decrypt(secret);
+    print(value);
+  } on MagicDecryptException {
+    // Malformed payload, or one this key cannot open.
+  }
+}
+```
+
+`key:generate` replaces any `APP_KEY` in `.env` and orphans everything encrypted under the old one; the installer never runs it.
+
+## API
+
+- `Crypt` (facade): `encrypt(String)` and `decrypt(String)` use the `app.key` config; `encryptWithDeviceKey`, `decryptWithDeviceKey` (async) use a key generated on first use and kept in `Vault`; `hasDeviceKey()`, `generateDeviceKey()` (replaces the key), `clearDeviceKey()`.
+- `EncryptionServiceProvider`: binds the lazy `encrypter` singleton in `boot()`. Not auto-registered. A missing or empty `app.key` binds a thrower, and a wrong-size key throws on first `Crypt` use, not at boot.
+- `MagicEncrypter(String key)`: the cipher, the key being 32 characters whose UTF-8 bytes are the AES key. `MagicEncrypter.fromAppKey(String)` also accepts `base64:` plus 32 bytes. `encrypt(String)` and `decrypt(String)`.
+- `MagicDecryptException`: thrown by `decrypt` for a malformed payload or a failed decryption.
+- `key:generate` (dowel command, `package:magic_encryption/cli.dart`): writes `APP_KEY=base64:<32 random bytes>` to `.env`; `--show` prints it instead.
+
+## Platforms
+
+- Config-key mode is pure Dart (`pointycastle`) and runs wherever Flutter does.
+- Device-key mode keeps its key in `Vault`: as strong as the platform store (Keychain on iOS and macOS, Keystore on Android, a weaker store on web). It needs core's `VaultServiceProvider` and no `app.key`.
+
+## Rules for agents
+
+- Import only `package:magic_encryption/magic_encryption.dart`; everything under `src/` is private.
+- Register `EncryptionServiceProvider` in the `providers` list; it is not auto-registered.
+- The wire format is `base64(iv):base64(ciphertext)`: AES-256-CBC, PKCS7, a random 16-byte IV per call, UTF-8 plaintext. It is NOT Laravel's `Crypt` format and cannot read or write it.
+- There is no MAC. A payload that decrypts is not proven untampered, and a decryption failure reported to the sender is a padding oracle. Use `Crypt` for confidentiality at rest; verify integrity on the server.
+- `Crypt.encrypt('')` throws `RangeError`; a wrong-key payload throws `MagicDecryptException`, except for about one in 256 that decrypts to garbage.
+- Never run `key:generate` on an app that holds stored ciphertext: it replaces `APP_KEY`. `generateDeviceKey()` and `clearDeviceKey()` lose device-key ciphertext the same way.
+- In tests, call `Crypt.clearDeviceKey()` in `tearDown`: the device encrypter is cached in a static field.
+
+## Docs
+
+- [Installation](https://anilcancakir.com/magic_encryption/docs/getting-started/installation.md): install, the key, requirements, a short check.
+- [Crypt](https://anilcancakir.com/magic_encryption/docs/basics/crypt.md): encrypt, decrypt, failure modes, gotchas.
+- [Device key](https://anilcancakir.com/magic_encryption/docs/basics/device-key.md): the Vault-backed key, lifecycle, gotchas.
+- [App key](https://anilcancakir.com/magic_encryption/docs/basics/app-key.md): key formats, `key:generate`, rotation.
+- [Wire format](https://anilcancakir.com/magic_encryption/docs/guides/wire-format.md): the exact payload, what it does not guarantee, Laravel.
+- [Testing](https://anilcancakir.com/magic_encryption/docs/guides/testing.md): a booted app, a fake vault, pinned IVs.
+
+## Links
+
+- [README](https://github.com/anilcancakir/magic_encryption/blob/master/README.md): install, both modes, the agent rules table.
+- [API reference](https://pub.dev/documentation/magic_encryption/latest/): generated from the doc comments.
+- [Changelog](https://github.com/anilcancakir/magic_encryption/blob/master/CHANGELOG.md): what changed in each version.
+- [Source](https://github.com/anilcancakir/magic_encryption): issues and pull requests.

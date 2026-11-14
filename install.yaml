@@ -1,0 +1,29 @@
+# magic_encryption install manifest (PluginInstaller DSL schema v1).
+#
+# Registers EncryptionServiceProvider and nothing else: the provider reads the
+# `app.key` that magic:install already wires, so there is no config to publish
+# and no config factory to inject.
+#
+# key:generate is deliberately NOT a bootstrap_command. It overwrites APP_KEY in
+# .env unconditionally, and a new key makes every value already encrypted under
+# the old one unreadable, so running it is the operator's call.
+
+plugin_name: magic_encryption
+
+magic:
+  # Injects `import 'package:magic_encryption/magic_encryption.dart';` plus
+  # `(app) => EncryptionServiceProvider(app),` into the consumer's
+  # lib/config/app.dart providers list. Idempotent.
+  provider: EncryptionServiceProvider
+
+post_install:
+  message: |
+    Magic Encryption installed. Next steps:
+
+    1. Run `flutter pub get`.
+
+    2. Make sure APP_KEY is set in .env. To create one (this replaces any
+       existing key, and values encrypted under the old key become
+       unreadable):
+
+         dart run magic:dowel key:generate
