@@ -11,6 +11,56 @@ void main() {
       expect(() => MagicEncrypter('short'), throwsException);
     });
 
+    group('key length in UTF-8 bytes', () {
+      // 32 UTF-16 code units, 48 UTF-8 bytes: the old length check passed it.
+      final wideKey = 'é' * 16 + 'a' * 16;
+      final wideKeyBytes = utf8.encode(wideKey).length;
+
+      test('rejects a 32-character key that is not 32 bytes', () {
+        expect(wideKey.length, 32);
+        expect(wideKeyBytes, isNot(32));
+        expect(
+          () => MagicEncrypter(wideKey),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              allOf(contains('32 bytes'), contains('UTF-8')),
+            ),
+          ),
+        );
+      });
+
+      test('rejects the same key through fromAppKey', () {
+        expect(() => MagicEncrypter.fromAppKey(wideKey), throwsException);
+      });
+
+      test('accepts a key whose UTF-8 form is exactly 32 bytes', () {
+        final key = 'é' * 16;
+        expect(utf8.encode(key).length, 32);
+
+        final encrypter = MagicEncrypter(key);
+
+        expect(encrypter.decrypt(encrypter.encrypt('hello')), 'hello');
+      });
+    });
+
+    test('a malformed base64: key tells the developer the real command', () {
+      expect(
+        () => MagicEncrypter.fromAppKey('base64:###not-base64###'),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            allOf(
+              contains('dart run magic:dowel key:generate'),
+              isNot(contains('`magic key:generate`')),
+            ),
+          ),
+        ),
+      );
+    });
+
     group('fromAppKey', () {
       test('accepts a raw 32-character key and round-trips', () {
         final encrypter = MagicEncrypter.fromAppKey(validKey);

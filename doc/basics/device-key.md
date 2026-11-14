@@ -61,6 +61,7 @@ How safe the key is depends on `Vault`'s store on that platform: the Keychain on
 | Decrypting a `Crypt.encrypt` payload with the device key, or the other way round | The two modes use different keys; keep each value with the mode that wrote it. |
 | Treating the device key as backed up | It is lost with the secure storage. Keep nothing here that you cannot recreate. |
 | Reaching for device-key mode to share data with a server | The server cannot read it. Send the data over the transport instead; a key shared with a server would ship inside the app (see [Crypt](./crypt.md)). |
+| Changing the macOS keychain an app uses (signing with a provisioning profile after ad-hoc builds, or `macOsUsesDataProtectionKeychain` on `MagicVaultService`) | The two macOS keychains share no items and a miss looks like "never stored", so the next call generates a new device key and everything encrypted under the old one is unreadable. Pin the keychain on an app that already holds a key. |
 | Leaking the cached key between tests | Call `Crypt.clearDeviceKey()` in `tearDown`; see [Testing](../guides/testing.md). |
 
 <a name="related-documentation"></a>

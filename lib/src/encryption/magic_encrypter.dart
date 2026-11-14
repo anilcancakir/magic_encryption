@@ -44,12 +44,16 @@ class MagicEncrypter {
 
   /// Create a new encrypter instance.
   ///
-  /// The [key] must be a 32-character string to satisfy the AES-256
-  /// requirement; its UTF-8 bytes are the AES key. If the key is invalid, this
-  /// constructor will throw an exception to prevent insecure operations.
+  /// The [key] must be 32 bytes once UTF-8 encoded to satisfy the AES-256
+  /// requirement, and those bytes are the AES key. An ASCII key of 32
+  /// characters qualifies; a non-ASCII character can take several bytes. If
+  /// the key is invalid, this constructor will throw an exception to prevent
+  /// insecure operations.
   MagicEncrypter(String key) : _key = utf8.encode(key) {
-    if (key.length != 32) {
-      throw Exception('App Key must be 32 characters for AES-256.');
+    if (_key.length != 32) {
+      throw Exception(
+        'App Key must be 32 bytes of UTF-8 for AES-256 (got ${_key.length}).',
+      );
     }
   }
 
@@ -59,8 +63,8 @@ class MagicEncrypter {
   /// Build an encrypter from a Laravel-style `app.key`.
   ///
   /// Accepts either a `base64:`-prefixed key (as produced by
-  /// `magic key:generate`, which base64-encodes 32 random bytes) or a raw
-  /// 32-character string. Throws when the resolved key is not 32 bytes, so the
+  /// `dart run magic:dowel key:generate`, which base64-encodes 32 random
+  /// bytes) or a raw string of 32 UTF-8 bytes. Throws when the resolved key is not 32 bytes, so the
   /// generator output and the encrypter stay compatible.
   factory MagicEncrypter.fromAppKey(String appKey) {
     if (appKey.startsWith('base64:')) {
@@ -72,7 +76,7 @@ class MagicEncrypter {
         // an actionable message since every app key now flows through here.
         throw Exception(
           'App Key has a "base64:" prefix but the value is not valid base64 '
-          '(${e.message}). Re-run `magic key:generate`.',
+          '(${e.message}). Re-run `dart run magic:dowel key:generate`.',
         );
       }
       if (bytes.length != 32) {
