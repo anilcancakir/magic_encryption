@@ -32,7 +32,7 @@ The barrel is the only import; everything under `src/` is private.
 |:------------|:------|
 | Dart | `>=3.13.0` |
 | Flutter | `>=3.47.0` |
-| Magic | `^0.1.0`, installed and bootstrapped (`lib/config/app.dart` exists) |
+| Magic | `^1.0.0`, installed and bootstrapped (`lib/config/app.dart` exists) |
 | Dependencies | `pointycastle` for the cipher, pulled in automatically |
 | Device-key mode | Core's `VaultServiceProvider`, because the key lives in `Vault` |
 
