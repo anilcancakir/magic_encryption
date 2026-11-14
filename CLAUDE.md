@@ -4,7 +4,7 @@
 
 AES-256-CBC encryption for the Magic Framework: the `Crypt` facade (app-key and Vault-backed device-key modes), `EncryptionServiceProvider`, `MagicEncrypter`, `MagicDecryptException` and the `key:generate` command. Payloads are `base64(iv):base64(ciphertext)`, not authenticated and not Laravel-compatible.
 
-**Version:** 1.0.0 · **Dart:** >=3.13.0 · **Flutter:** >=3.47.0 · **Requires:** `magic` ^1.0.0
+**Version:** 1.0.1 · **Dart:** >=3.13.0 · **Flutter:** >=3.47.0 · **Requires:** `magic` ^1.0.0
 
 ## Commands
 
@@ -36,7 +36,7 @@ tool/check-docs.py               # Offline docs gate, run by docs-link-check.yml
 
 ## Post-Change Checklist
 
-After ANY source code change, sync **before committing**. A change is not done while one of these is stale:
+After any source code change, sync **before committing**. A change is not done while one of these is stale:
 
 1. **`CHANGELOG.md`**: Add entry under `[Unreleased]` section
 2. **`README.md`, `llms.txt` and the `doc/` pages**: Update if features, API, or usage changes
@@ -64,7 +64,7 @@ Every feature, fix, or refactor goes through red-green-refactor: write a failing
 | Making `key:generate` a `bootstrap_command` in `install.yaml` | It overwrites `APP_KEY` unconditionally and orphans stored ciphertext; running it stays the operator's call |
 | Importing Flutter or the runtime barrel from `lib/src/cli/` | The dowel dispatcher is a pure Dart process; the CLI tree imports `dart:` libraries and the dowel barrel only |
 | Claiming Laravel compatibility or authentication | The payload is not Laravel's and has no MAC |
-| Relative paths in `pubspec_overrides.yaml` | Use ABSOLUTE ones; the file is never committed |
+| Relative paths in `pubspec_overrides.yaml` | Use absolute ones; the file is never committed |
 
 ## Release
 

@@ -17,7 +17,7 @@ import 'exceptions.dart';
 /// plaintext UTF-8 encoded. Changing any part of it orphans every `e:` value
 /// already stored on a device.
 ///
-/// ## What this does NOT give you
+/// ## What this does not give you
 ///
 /// Ciphertexts produced here are **not authenticated**. There is no MAC, and
 /// this is where Magic diverges from Laravel's `Encrypter`, which appends an
@@ -117,7 +117,7 @@ class MagicEncrypter {
   /// [MagicDecryptException]. Bytes that are not valid UTF-8 decode to U+FFFD
   /// rather than throwing, as the 0.0.41 implementation did.
   ///
-  /// There is no MAC check, so a payload that decrypts is NOT thereby proven
+  /// There is no MAC check, so a payload that decrypts is not thereby proven
   /// untampered; see the class docs. Do not surface the failure to whoever
   /// supplied the payload, since distinguishable failures are what a padding
   /// oracle is built from.

@@ -4,7 +4,7 @@
 # `app.key` that magic:install already wires, so there is no config to publish
 # and no config factory to inject.
 #
-# key:generate is deliberately NOT a bootstrap_command. It overwrites APP_KEY in
+# key:generate is deliberately not a bootstrap_command. It overwrites APP_KEY in
 # .env unconditionally, and a new key makes every value already encrypted under
 # the old one unreadable, so running it is the operator's call.
 

@@ -47,9 +47,9 @@ How safe the key is depends on `Vault`'s store on that platform: the Keychain on
 <a name="lifecycle"></a>
 ## Lifecycle
 
-- The key lives as long as the install's secure storage does. Clearing app data or uninstalling the app removes it, and the ciphertext it protected cannot be opened afterwards.
+- The key lives as long as the secure storage entry does. On Android, clearing app data or uninstalling the app removes it. On iOS the Keychain item can survive a reinstall, because neither `Vault` nor this package wipes it on first run. Once the key is gone and the app has restarted (a running process keeps the key in memory and does not read `Vault` again), the ciphertext it protected cannot be opened.
 - `generateDeviceKey()` and `clearDeviceKey()` both update the in-memory cache as well as `Vault`, so the next call uses the new state at once.
-- The key never leaves the device, so a payload encrypted here cannot be decrypted by a server or another install. Send data to a server through the transport, not through this cipher; see [Wire Format](../guides/wire-format.md).
+- The key never leaves the device, so a server or another device cannot decrypt a payload encrypted here; on the same iOS device a reinstall can, when the Keychain item survived and you kept the ciphertext. Send data to a server through the transport, not through this cipher; see [Wire Format](../guides/wire-format.md).
 
 <a name="gotchas"></a>
 ## Gotchas
