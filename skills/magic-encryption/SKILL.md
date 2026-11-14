@@ -35,7 +35,7 @@ Requires Dart >=3.13, Flutter >=3.47 and `magic` ^1.0.0. The installer registers
 
 1. Create `APP_KEY` with `dart run magic:dowel key:generate`: it writes `APP_KEY=base64:<32 random bytes>` to `.env`. `--show` prints it and leaves `.env` alone. Never commit it.
 2. `key:generate` replaces any existing `APP_KEY`, and every value encrypted under the old key becomes unreadable. Never run it on an app with stored ciphertext. The payload has no key id, so there is no rotation: migrate by decrypting with `MagicEncrypter.fromAppKey(oldKey)` and encrypting again with `Crypt.encrypt`.
-3. Device-key mode needs core's `VaultServiceProvider` and no `app.key`. The key is 32 random alphanumeric characters stored in `Vault` as `magic:device_encryption_key`, created on first use and cached in a static field.
+3. Device-key mode needs core's `VaultServiceProvider` and needs no `app.key`. The key is 32 random alphanumeric characters stored in `Vault` as `magic:device_encryption_key`, created on first use and cached in a static field.
 4. `generateDeviceKey()` and `clearDeviceKey()` orphan everything encrypted under the old device key. The key is lost with the install's secure storage, so keep only data you can recreate.
 5. A `Crypt.encrypt` payload and a device-key payload do not open each other's: keep a value with the mode that wrote it.
 

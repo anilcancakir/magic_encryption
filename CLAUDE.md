@@ -72,7 +72,7 @@ Every feature, fix, or refactor goes through red-green-refactor: write a failing
 2. After it merges, tag the merge commit with the bare version (`git tag 1.0.1 && git push origin 1.0.1`, no `v`). `publish.yml` runs from the tag; the pub.dev Admin tab holds repository `anilcancakir/magic_encryption`, tag pattern `{{version}}` and push events only.
 3. A failed `validate` is fixed forward: delete the tag (`git push --delete origin <tag>` and `git tag -d <tag>`), fix it on a PR and tag the new merge commit. If only `github-release` fails after pub.dev accepted the version, use "Re-run failed jobs" (never "Re-run all jobs") or `gh release create <tag> --title <tag> --latest --verify-tag --notes-file <file>`.
 
-The first publish (1.0.0) is a manual `flutter pub publish`, since tag-triggered OIDC cannot create a package.
+The first publish (1.0.0) is a manual `flutter pub publish` from a clean worktree of the merge commit, since tag-triggered OIDC cannot create a package. Pushing the 1.0.0 tag afterwards makes `publish` fail (the version exists) and skips `github-release`: create the release by hand with `gh release create 1.0.0 --title 1.0.0 --latest --verify-tag --notes-file <file>`.
 
 ## CI
 

@@ -61,6 +61,8 @@ The payload has no MAC. A value that decrypts is not thereby proven untampered: 
 
 Use `Crypt` to keep a value opaque at rest on the device. Verify anything whose integrity matters (a token, an amount, an identity) on the server that issued it. See [Wire Format](../guides/wire-format.md) for the exact format.
 
+The app key is not a secret from someone who holds your app. `APP_KEY` is loaded from the `.env` asset, so it ships inside every build, and anyone who unpacks the build can read it. Config-key mode hides a value from people without the binary. Never put a key that a server also trusts in `APP_KEY`; for a secret kept on one device, prefer [Device Key](./device-key.md).
+
 <a name="gotchas"></a>
 ## Gotchas
 
@@ -72,6 +74,7 @@ Use `Crypt` to keep a value opaque at rest on the device. Verify anything whose 
 | Treating a successful decrypt as proof of integrity | There is no MAC. Verify integrity on the server. |
 | Showing `MagicDecryptException` to the party that sent the payload | Log it, answer with one generic error. |
 | Expecting Laravel to read the payload | The format is not Laravel's; see [Wire Format](../guides/wire-format.md). |
+| Sharing `APP_KEY` with a server so it can read or write payloads | The key ships inside the build, so it is not secret from anyone with the app. Exchange data through the transport. |
 | Encrypting a `Map` or a `List` | `Crypt` takes a `String`; encode with `jsonEncode` first and decode after `decrypt`. |
 
 <a name="related-documentation"></a>

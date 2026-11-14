@@ -49,7 +49,7 @@ How safe the key is depends on `Vault`'s store on that platform: the Keychain on
 
 - The key lives as long as the install's secure storage does. Clearing app data or uninstalling the app removes it, and the ciphertext it protected cannot be opened afterwards.
 - `generateDeviceKey()` and `clearDeviceKey()` both update the in-memory cache as well as `Vault`, so the next call uses the new state at once.
-- The key never leaves the device, so a payload encrypted here cannot be decrypted by a server or another install. Use [Crypt](./crypt.md) with a shared `APP_KEY` for that.
+- The key never leaves the device, so a payload encrypted here cannot be decrypted by a server or another install. Send data to a server through the transport, not through this cipher; see [Wire Format](../guides/wire-format.md).
 
 <a name="gotchas"></a>
 ## Gotchas
@@ -60,7 +60,7 @@ How safe the key is depends on `Vault`'s store on that platform: the Keychain on
 | Calling `generateDeviceKey()` to "refresh" the key | It orphans every existing value. Call it only when the data is disposable. |
 | Decrypting a `Crypt.encrypt` payload with the device key, or the other way round | The two modes use different keys; keep each value with the mode that wrote it. |
 | Treating the device key as backed up | It is lost with the secure storage. Keep nothing here that you cannot recreate. |
-| Reaching for device-key mode to share data with a server | The server cannot read it; use `Crypt` with `APP_KEY` instead. |
+| Reaching for device-key mode to share data with a server | The server cannot read it. Send the data over the transport instead; a key shared with a server would ship inside the app (see [Crypt](./crypt.md)). |
 | Leaking the cached key between tests | Call `Crypt.clearDeviceKey()` in `tearDown`; see [Testing](../guides/testing.md). |
 
 <a name="related-documentation"></a>
