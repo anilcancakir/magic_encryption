@@ -106,11 +106,11 @@ Future<void> main() async {
 | `Crypt.generateDeviceKey()` | Replaces the key. Everything encrypted under the old one is lost. |
 | `Crypt.clearDeviceKey()` | Deletes the key from `Vault`. Everything encrypted under it is lost. |
 
-Device-key mode needs core's `VaultServiceProvider` registered and no `app.key`.
+Device-key mode needs core's `VaultServiceProvider` registered, and needs no `app.key`.
 
 ## What this does not give you
 
-The payload has no MAC. A value that decrypts is not thereby proven untampered: CBC is malleable, and a decryption failure reported back to whoever supplied the payload is a padding oracle. Use `Crypt` to keep a value opaque at rest, and verify anything whose integrity matters (a token, an amount, an identity) on the server that issued it.
+The payload has no MAC. A value that decrypts is not thereby proven untampered: CBC is malleable, and a decryption failure reported back to whoever supplied the payload is a padding oracle. Use `Crypt` to keep a value opaque at rest, and verify anything whose integrity matters (a token, an amount, an identity) on the server that issued it. `APP_KEY` is read from the `.env` asset, so it ships inside every build: config-key mode hides a value from someone without your binary, not from someone who unpacks it, and a key a server also trusts must never live there. For a secret kept on one device, use device-key mode.
 
 The wire format is also not Laravel's. A Laravel payload is base64 of a JSON object with an HMAC; this one is `base64(iv):base64(ciphertext)`. The two cannot read each other's output. The format is fixed so ciphertext written by Magic 0.0.41 and earlier stays readable.
 

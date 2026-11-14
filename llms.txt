@@ -41,7 +41,7 @@ void main() {
 ## Platforms
 
 - Config-key mode is pure Dart (`pointycastle`) and runs wherever Flutter does.
-- Device-key mode keeps its key in `Vault`: as strong as the platform store (Keychain on iOS and macOS, Keystore on Android, a weaker store on web). It needs core's `VaultServiceProvider` and no `app.key`.
+- Device-key mode keeps its key in `Vault`: as strong as the platform store (Keychain on iOS and macOS, Keystore on Android, a weaker store on web). It needs core's `VaultServiceProvider` and needs no `app.key`.
 
 ## Rules for agents
 
