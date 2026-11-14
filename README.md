@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://anilcancakir.com/magic_encryption">Documentation</a> ·
+  <a href="https://anilcancakir.com/magic/docs/encryption">Documentation</a> ·
   <a href="https://pub.dev/packages/magic_encryption">pub.dev</a> ·
   <a href="https://github.com/anilcancakir/magic_encryption/issues">Issues</a>
 </p>
@@ -136,7 +136,7 @@ Rules for an agent writing code against this package. Each one is a mistake that
 
 ## Links
 
-- [Documentation](https://anilcancakir.com/magic_encryption/docs/getting-started/installation): installation, `Crypt`, the app key, the device key, the wire format and testing
+- [Documentation](https://anilcancakir.com/magic/docs/encryption/getting-started/installation): installation, `Crypt`, the app key, the device key, the wire format and testing
 - [API reference](https://pub.dev/documentation/magic_encryption/latest/)
 - [llms.txt](llms.txt) and the [agent skill](skills/magic-encryption/SKILL.md) for AI coding agents: `npx skills add anilcancakir/magic_encryption`
 - [Changelog](CHANGELOG.md)
