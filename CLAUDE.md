@@ -4,7 +4,7 @@
 
 AES-256-CBC encryption for the Magic Framework: the `Crypt` facade (app-key and Vault-backed device-key modes), `EncryptionServiceProvider`, `MagicEncrypter`, `MagicDecryptException` and the `key:generate` command. Payloads are `base64(iv):base64(ciphertext)`, not authenticated and not Laravel-compatible.
 
-**Version:** 1.0.1 · **Dart:** >=3.13.0 · **Flutter:** >=3.47.0 · **Requires:** `magic` ^1.0.0
+**Version:** 1.0.2 · **Dart:** >=3.13.0 · **Flutter:** >=3.47.0 · **Requires:** `magic` ^1.0.0
 
 ## Commands
 

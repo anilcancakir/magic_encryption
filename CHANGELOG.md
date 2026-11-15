@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-15
+
 ### Changed
 
-- The package page is `https://anilcancakir.com/magic/encryption` and the documentation links sit under `https://anilcancakir.com/magic/docs/encryption` (the pub.dev page carries it from the next release).
+- The package page is `https://anilcancakir.com/magic/encryption` and the documentation links sit under `https://anilcancakir.com/magic/docs/encryption`.
 
 ### Fixed
 

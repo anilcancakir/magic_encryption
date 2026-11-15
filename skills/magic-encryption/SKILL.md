@@ -1,7 +1,7 @@
 ---
 name: magic-encryption
 description: "Encrypt and decrypt strings in a Magic app with the Crypt facade, an APP_KEY or a Vault-backed device key."
-version: 1.0.1
+version: 1.0.2
 when_to_use: "Use when code imports package:magic_encryption or touches Crypt, EncryptionServiceProvider, MagicEncrypter, APP_KEY or key:generate."
 ---
 
