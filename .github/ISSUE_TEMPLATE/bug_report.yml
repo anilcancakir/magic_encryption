@@ -54,7 +54,7 @@ body:
     id: version
     attributes:
       label: magic_encryption Version
-      placeholder: "1.0.0"
+      placeholder: "1.0.2"
     validations:
       required: true
 
