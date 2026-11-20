@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/anilcancakir/magic_encryption/master/screenshots/logo.png" width="120" alt="Magic Encryption logo" />
+  <img src="https://raw.githubusercontent.com/anilcancakir/magic_encryption/master/.github/logo.png" width="120" alt="Magic Encryption logo" />
 </p>
 
 <h1 align="center">Magic Encryption</h1>
